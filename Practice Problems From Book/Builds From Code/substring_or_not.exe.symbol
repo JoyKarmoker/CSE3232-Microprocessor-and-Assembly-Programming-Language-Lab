@@ -1,0 +1,31 @@
+< THE SYMBOL TABLE >  substring_or_not.exe  --  emu8086 assembler version: 4.08 
+===================================================================================================
+Name                     	Offset    	Size      	Type      	Segment   
+===================================================================================================
+STACK                    	00000     	-5        	SEGMENT   	(ITSELF)  
+DATA                     	00010     	-5        	SEGMENT   	(ITSELF)  
+MSG1                     	00000     	1         	VAR       	data      
+MSG2                     	0000E     	1         	VAR       	data      
+MAINST                   	0001D     	1         	VAR       	data      
+SUBST                    	0006D     	1         	VAR       	data      
+SUBST_LEN                	000BD     	2         	VAR       	data      
+START                    	000BF     	2         	VAR       	data      
+STOP                     	000C1     	2         	VAR       	data      
+YESMSG                   	000C3     	1         	VAR       	data      
+NOMSG                    	000E2     	1         	VAR       	data      
+CODE                     	00021     	-5        	SEGMENT   	(ITSELF)  
+MAIN                     	00000     	-1        	NEAR      	code      
+REPEAT_CMP               	00053     	-1        	LABEL     	code      
+YES                      	00071     	-1        	LABEL     	code      
+NO                       	0007D     	-1        	LABEL     	code      
+EXIT                     	00087     	-1        	LABEL     	code      
+READ_STR                 	0008B     	-1        	NEAR      	code      
+REPEAT                   	00095     	-1        	LABEL     	code      
+UNTIL                    	000A1     	-1        	LABEL     	code      
+LOOP_REPEAT              	000A3     	-1        	LABEL     	code      
+READ_STR_EXIT            	000A7     	-1        	LABEL     	code      
+NEW_LINE                 	000AA     	-1        	NEAR      	code      
+===================================================================================================
+[ 3/25/2023  --  11:52:18 AM ] 
+< END >
+ 

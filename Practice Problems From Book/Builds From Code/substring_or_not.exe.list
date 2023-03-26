@@ -1,0 +1,236 @@
+EMU8086 GENERATED LISTING. MACHINE CODE <- SOURCE.
+ 
+substring_or_not.exe -- emu8086 assembler version: 4.08  
+ 
+[ 3/25/2023  --  11:52:18 AM ] 
+ 
+===================================================================================================
+[LINE]     LOC: MACHINE CODE                          SOURCE
+===================================================================================================
+ 
+[   1]        :                                       .model small
+[   2]        :                                       .stack 100h
+[   3]        :                                       .data
+[   4]    0100: 45 6E 74 65 72 20 73 75 62 73 74 3A   msg1 db 'Enter subst: $'
+                20 24                               
+[   5]    010E: 45 6E 74 65 72 20 4D 61 69 6E 73 74   msg2 db 'Enter Mainst: $'
+                3A 20 24                            
+[   6]    011D: 00 00 00 00 00 00 00 00 00 00 00 00   mainst db 80 dup(?)
+                00 00 00 00 00 00 00 00 00 00 00 00 
+                00 00 00 00 00 00 00 00 00 00 00 00 
+                00 00 00 00 00 00 00 00 00 00 00 00 
+                00 00 00 00 00 00 00 00 00 00 00 00 
+                00 00 00 00 00 00 00 00 00 00 00 00 
+                00 00 00 00 00 00 00 00             
+[   7]    016D: 00 00 00 00 00 00 00 00 00 00 00 00   subst db 80 dup(?)
+                00 00 00 00 00 00 00 00 00 00 00 00 
+                00 00 00 00 00 00 00 00 00 00 00 00 
+                00 00 00 00 00 00 00 00 00 00 00 00 
+                00 00 00 00 00 00 00 00 00 00 00 00 
+                00 00 00 00 00 00 00 00 00 00 00 00 
+                00 00 00 00 00 00 00 00             
+[   8]    01BD: 00 00                                 subst_len dw ?
+[   9]    01BF: 00 00                                 start dw ?
+[  10]    01C1: 00 00                                 stop dw ?
+[  11]    01C3: 53 75 62 73 74 20 69 73 20 61 20 73   yesmsg db 'Subst is a substring of mainst$'
+                75 62 73 74 72 69 6E 67 20 6F 66 20 
+                6D 61 69 6E 73 74 24                
+[  12]    01E2: 53 75 62 73 74 20 69 73 20 6E 6F 74   nomsg db 'Subst is not a substring of mainst$'
+                20 61 20 73 75 62 73 74 72 69 6E 67 
+                20 6F 66 20 6D 61 69 6E 73 74 24    
+[  13]        :                                       .code
+[  14]    0210:                                       main proc
+[  15]    0210: B8 10 00                              mov ax, @data
+[  16]    0213: 8E D8                                 mov ds, ax
+[  17]    0215: 8E C0                                 mov es, ax
+[  18]        :                                       
+[  19]        :                                       ;take subst
+[  20]    0217: BA 00 00                              lea dx, msg1
+[  21]    021A: B4 09                                 mov ah, 9
+[  22]    021C: CD 21                                 int 21h
+[  23]        :                                       
+[  24]    021E: BF 6D 00                              lea di, subst
+[  25]    0221: E8 77 00                              call read_str
+[  26]    0224: 89 1E BD 00                           mov subst_len, bx ;after reading bx will be the length of subst
+[  27]        :                                       
+[  28]        :                                       ;call new_line
+[  29]        :                                       ;mov cx, bx
+[  30]        :                                       ;jcxz exit
+[  31]        :                                       ;mov si, 0
+[  32]        :                                       ;mov ah, 2
+[  33]        :                                       
+[  34]        :                                       ;print:
+[  35]        :                                       ;mov dl, subst[si]
+[  36]        :                                       ;inc si
+[  37]        :                                       ;int 21h
+[  38]        :                                       ;loop print
+[  39]        :                                       
+[  40]    0228: E8 8F 00                              call new_line
+[  41]        :                                       ;take mainst
+[  42]    022B: BA 0E 00                              lea dx, msg2
+[  43]    022E: B4 09                                 mov ah, 9
+[  44]    0230: CD 21                                 int 21h
+[  45]        :                                       
+[  46]    0232: BF 1D 00                              lea di, mainst
+[  47]    0235: E8 63 00                              call read_str
+[  48]        :                                       
+[  49]        :                                       
+[  50]        :                                       ;call new_line
+[  51]        :                                       ;mov cx, bx
+[  52]        :                                       ;jcxz exit
+[  53]        :                                       ;mov si, 0
+[  54]        :                                       ;mov ah, 2
+[  55]        :                                       
+[  56]        :                                       ;print_mainst:
+[  57]        :                                       ;mov dl, mainst[si]
+[  58]        :                                       ;inc si
+[  59]        :                                       ;int 21h
+[  60]        :                                       ;loop print_mainst
+[  61]        :                                       
+[  62]        :                                       
+[  63]        :                                       ; conditions where subst can not be a substring
+[  64]    0238: 0B DB                                 or bx, bx
+[  65]    023A: 74 51                                 je no
+[  66]    023C: 83 3E BD 00 00                        cmp subst_len, 0
+[  67]    0241: 74 4A                                 je no
+[  68]    0243: 39 1E BD 00                           cmp subst_len, bx
+[  69]    0247: 7F 44                                 jg no
+[  70]        :                                       
+[  71]    0249: BE 6D 00                              lea si, subst ;point si to subst
+[  72]        :                                       ;calculating stop
+[  73]        :                                       
+[  74]    024C: BF 1D 00                              lea di, mainst
+[  75]    024F: 89 3E C1 00                           mov stop, di
+[  76]    0253: 01 1E C1 00                           add stop, bx
+[  77]    0257: 8B 0E BD 00                           mov cx, subst_len
+[  78]    025B: 29 0E C1 00                           sub stop, cx
+[  79]        :                                       
+[  80]    025F: 89 3E BF 00                           mov start, di
+[  81]    0263:                                       repeat_cmp:
+[  82]    0263: 8B 0E BD 00                           mov cx, subst_len
+[  83]    0267: 8B 3E BF 00                           mov di, start
+[  84]    026B: BE 6D 00                              lea si, subst
+[  85]        :                                       
+[  86]    026E: F3 A6                                 repe cmpsb
+[  87]    0270: 74 0F                                 je yes
+[  88]        :                                       
+[  89]    0272: FF 06 BF 00                           inc start
+[  90]        :                                       
+[  91]    0276: A1 BF 00                              mov ax, start
+[  92]    0279: 3B 06 C1 00                           cmp ax, stop
+[  93]    027D: 7F 0E                                 jnle no
+[  94]    027F: EB E2                                 jmp repeat_cmp
+[  95]        :                                       
+[  96]        :                                       
+[  97]    0281:                                       yes:
+[  98]    0281: E8 36 00                              call new_line
+[  99]    0284: BA C3 00                              lea dx, yesmsg
+[ 100]    0287: B4 09                                 mov ah, 9
+[ 101]    0289: CD 21                                 int 21h
+[ 102]    028B: EB 0A                                 jmp exit
+[ 103]        :                                       
+[ 104]        :                                       
+[ 105]    028D:                                       no:
+[ 106]    028D: E8 2A 00                              call new_line
+[ 107]    0290: BA E2 00                              lea dx, nomsg
+[ 108]    0293: B4 09                                 mov ah, 9
+[ 109]    0295: CD 21                                 int 21h
+[ 110]        :                                       
+[ 111]        :                                       
+[ 112]    0297:                                       exit:
+[ 113]    0297: B4 4C                                 mov ah, 4ch
+[ 114]    0299: CD 21                                 int 21h
+[ 115]        :                                       
+[ 116]        :                                       
+[ 117]        :                                       main endp
+[ 118]        :                                       
+[ 119]    029B:                                       read_str proc
+[ 120]    029B: 50                                    push ax
+[ 121]    029C: 57                                    push di
+[ 122]        :                                       
+[ 123]    029D: BB 00 00                              mov bx, 0
+[ 124]    02A0: FC                                    cld
+[ 125]    02A1: B4 01                                 mov ah, 1
+[ 126]    02A3: CD 21                                 int 21h
+[ 127]        :                                       
+[ 128]    02A5:                                       repeat:
+[ 129]    02A5: 3C 0D                                 cmp al, 0dh
+[ 130]    02A7: 74 0E                                 je read_str_exit
+[ 131]        :                                       
+[ 132]    02A9: 3C 08                                 cmp al, 08h
+[ 133]    02AB: 74 04                                 je until
+[ 134]        :                                       
+[ 135]    02AD: AA                                    stosb
+[ 136]    02AE: 43                                    inc bx
+[ 137]    02AF: EB 02                                 jmp loop_repeat
+[ 138]        :                                       
+[ 139]    02B1:                                       until:
+[ 140]    02B1: 4B                                    dec bx
+[ 141]    02B2: 4F                                    dec di
+[ 142]    02B3:                                       loop_repeat:
+[ 143]    02B3: CD 21                                 int 21h
+[ 144]    02B5: EB EE                                 jmp repeat
+[ 145]        :                                       
+[ 146]        :                                       
+[ 147]    02B7:                                       read_str_exit:
+[ 148]    02B7: 5F                                    pop di
+[ 149]    02B8: 58                                    pop ax
+[ 150]    02B9: C3                                    ret
+[ 151]        :                                       read_str endp
+[ 152]        :                                       
+[ 153]    02BA:                                       new_line proc
+[ 154]    02BA: B4 02                                 mov ah, 2
+[ 155]    02BC: B2 0A                                 mov dl, 0ah
+[ 156]    02BE: CD 21                                 int 21h
+[ 157]    02C0: B2 0D                                 mov dl, 0dh
+[ 158]    02C2: CD 21                                 int 21h
+[ 159]    02C4: C3                                    ret
+[ 160]        :                                       
+[ 161]        :                                       new_line endp
+[ 162]        :                                       end main
+[ 163]        :                                       
+ 
+===================================================================================================
+ 
+EXE HEADER - bytes from 0000 to 01FF inclusive.
+
+0000: 4D      -   exe signature (M)
+0001: 5A      -   exe signature (Z)
+0002: C5      -   bytes on last page (l.byte)
+0003: 00      -   bytes on last page (h.byte)
+0004: 03      -   512 byte pages in file (l.byte)
+0005: 00      -   512 byte pages in file (h.byte)
+0006: 01      -   relocations (l.byte)
+0007: 00      -   relocations (h.byte)
+0008: 20      -   paragraphs in header (l.byte)
+0009: 00      -   paragraphs in header (h.byte)
+000A: 00      -   minimum memory (l.byte)
+000B: 00      -   minimum memory (h.byte)
+000C: FF      -   maximum memory (l.byte)
+000D: FF      -   maximum memory (h.byte)
+000E: 00      -   SS - stack segment (l.byte)
+000F: 00      -   SS - stack segment (h.byte)
+0010: 00      -   SP - stack pointer (l.byte)
+0011: 01      -   SP - stack pointer (h.byte)
+0012: EC      -   check sum (l.byte)
+0013: C1      -   check sum (h.byte)
+0014: 00      -   IP - instruction pointer (l.byte)
+0015: 00      -   IP - instruction pointer (h.byte)
+0016: 21      -   CS - code segment (l.byte)
+0017: 00      -   CS - code segment (h.byte)
+0018: 1E      -   relocation table adress (l.byte)
+0019: 00      -   relocation table adress (h.byte)
+001A: 00      -   overlay number (l.byte)
+001B: 00      -   overlay number (h.byte)
+001C: 01      -   signature (l.byte)
+001D: 00      -   signature (h.byte)
+001E: 01      -   relocation table - offset inside segment (l.byte)
+001F: 00      -   relocation table - offset inside segment (h.byte)
+0020: 21      -   relocation table - segment anchor (l.byte)
+0021: 00      -   relocation table - segment anchor (h.byte)
+0022 to 01FF  -   reserved relocation area  (00) 
+
+
+
+
+===================================================================================================
